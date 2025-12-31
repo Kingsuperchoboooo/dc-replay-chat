@@ -1,0 +1,466 @@
+/* Global Clean Reset & Typography */
+.container {
+  min-height: 100vh;
+  background: radial-gradient(circle at top center, #1e293b, #0f172a);
+  color: #f1f5f9;
+  font-family: 'Inter', system-ui, -apple-system, sans-serif;
+  display: flex;
+  flex-direction: column;
+  /* align-items: center;  <-- Remove this to let margin: auto handle centering */
+  /* justify-content: center; <-- Remove to let margin: auto handle centering */
+  padding: 1rem;
+  /* Reduce padding to give more space */
+  overflow: auto;
+  /* Allow scroll if resized huge */
+}
+
+/* Upload Zone with Dashed Glass Effect */
+/* Landing & Tabs */
+.landingContainer {
+  width: 100%;
+  max-width: 500px;
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.tabContainer {
+  display: flex;
+  background: rgba(15, 23, 42, 0.6);
+  padding: 4px;
+  border-radius: 12px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.tabButton {
+  flex: 1;
+  padding: 0.75rem;
+  border: none;
+  background: transparent;
+  color: #94a3b8;
+  font-weight: 600;
+  cursor: pointer;
+  border-radius: 8px;
+  transition: all 0.2s;
+}
+
+.tabButton:hover {
+  color: #fff;
+}
+
+.activeTab {
+  background: rgba(59, 130, 246, 0.2);
+  color: #60a5fa;
+}
+
+/* Scrape Form */
+.scrapeForm {
+  background: rgba(30, 41, 59, 0.7);
+  backdrop-filter: blur(20px);
+  padding: 2rem;
+  border-radius: 1.5rem;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.labelRow {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: -0.5rem;
+  padding: 0 0.5rem;
+}
+
+.labelText {
+  font-size: 0.8rem;
+  color: #94a3b8;
+  font-weight: 600;
+  flex: 1;
+}
+
+.inputField {
+  width: 100%;
+  background: rgba(15, 23, 42, 0.6);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  padding: 0.85rem 1rem;
+  border-radius: 10px;
+  color: #f1f5f9;
+  outline: none;
+  font-family: inherit;
+}
+
+.inputField:focus {
+  border-color: #3b82f6;
+  background: rgba(15, 23, 42, 0.8);
+}
+
+.row {
+  display: flex;
+  gap: 1rem;
+}
+
+.scrapeButton {
+  background: linear-gradient(135deg, #3b82f6, #2563eb);
+  color: white;
+  border: none;
+  padding: 1rem;
+  border-radius: 10px;
+  font-weight: 700;
+  cursor: pointer;
+  margin-top: 0.5rem;
+  transition: transform 0.2s;
+}
+
+.scrapeButton:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: 0 10px 20px -5px rgba(37, 99, 235, 0.5);
+}
+
+.scrapeButton:disabled {
+  opacity: 0.7;
+  cursor: wait;
+}
+
+.loadingText {
+  text-align: center;
+  color: #60a5fa;
+  font-size: 0.9rem;
+  animation: pulse 1.5s infinite;
+}
+
+@keyframes pulse {
+
+  0%,
+  100% {
+    opacity: 0.6;
+  }
+
+  50% {
+    opacity: 1;
+  }
+}
+
+/* Main Chat Container - Glassmorphism Card */
+.chatContainer {
+  /* Starting dimensions */
+  width: 800px;
+  height: 700px;
+
+  /* Constraints */
+  min-width: 350px;
+  min-height: 400px;
+  max-width: 95vw;
+  max-height: 95vh;
+
+  background: rgba(30, 41, 59, 0.7);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 24px;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  box-shadow:
+    0 0 0 1px rgba(0, 0, 0, 0.2),
+    0 20px 50px -10px rgba(0, 0, 0, 0.6);
+  animation: fadeInContainer 0.6s ease-out;
+
+  /* Resizable */
+  resize: both;
+  position: relative;
+  /* margin: auto handles centering in flex container more gracefully than align-items sometimes */
+  margin: auto;
+}
+
+@keyframes fadeInContainer {
+  from {
+    opacity: 0;
+    transform: scale(0.95);
+  }
+
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+/* Header */
+.header {
+  padding: 1.25rem 1.5rem;
+  background: rgba(15, 23, 42, 0.6);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  z-index: 10;
+}
+
+.headerTitle {
+  font-weight: 800;
+  font-size: 1.1rem;
+  letter-spacing: -0.02em;
+  background: linear-gradient(135deg, #fff 0%, #94a3b8 100%);
+  -webkit-background-clip: text;
+  color: transparent;
+}
+
+.timeDisplay {
+  font-family: 'JetBrains Mono', 'Fira Code', monospace;
+  font-size: 0.85rem;
+  color: #60a5fa;
+  background: rgba(37, 99, 235, 0.15);
+  padding: 0.25rem 0.75rem;
+  border-radius: 6px;
+  border: 1px solid rgba(59, 130, 246, 0.2);
+  box-shadow: 0 0 15px rgba(59, 130, 246, 0.1);
+}
+
+/* Messages Area */
+.messagesArea {
+  flex: 1;
+  padding: 1.5rem;
+  overflow-y: auto;
+  scroll-behavior: smooth;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  background: linear-gradient(to bottom, rgba(15, 23, 42, 0) 0%, rgba(15, 23, 42, 0.3) 100%);
+}
+
+.messagesArea::-webkit-scrollbar {
+  width: 5px;
+}
+
+.messagesArea::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 10px;
+}
+
+.messagesArea::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+/* Message Bubbles */
+.messageBubble {
+  background: rgba(255, 255, 255, 0.03);
+  padding: 0.85rem 1rem;
+  border-radius: 16px;
+  border-top-left-radius: 4px;
+  border: 1px solid rgba(255, 255, 255, 0.04);
+  animation: slideInMessage 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+  transform-origin: left bottom;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  transition: transform 0.2s;
+}
+
+.messageBubble:hover {
+  background: rgba(255, 255, 255, 0.06);
+}
+
+@keyframes slideInMessage {
+  from {
+    opacity: 0;
+    transform: translateY(20px) scale(0.9);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+.metaRow {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-bottom: 2px;
+}
+
+.author {
+  font-weight: 700;
+  color: #fbbf24;
+  /* Amber-400 */
+  font-size: 0.9rem;
+}
+
+.ip {
+  color: #94a3b8;
+  font-size: 0.75rem;
+}
+
+.time {
+  margin-left: auto;
+  color: #64748b;
+  font-size: 0.75rem;
+}
+
+.content {
+  color: #e2e8f0;
+  font-size: 0.95rem;
+  line-height: 1.5;
+}
+
+/* Controls Area */
+.controlsArea {
+  margin-top: auto;
+  padding: 1rem 1.5rem;
+  background: rgba(15, 23, 42, 0.4);
+  border-top: 1px solid rgba(255, 255, 255, 0.05);
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  position: relative;
+  /* Ensure controls stack context */
+  z-index: 10;
+}
+
+/* Updated Progress Bar with Heatmap Integration */
+.progressBar {
+  width: 100%;
+  height: 24px;
+  /* Much thicker for visibility */
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 6px;
+  cursor: pointer;
+  position: relative;
+  overflow: hidden;
+  margin-bottom: 0.5rem;
+}
+
+/* Heatmap Bars */
+.heatmapContainer {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: flex-end;
+  pointer-events: none;
+  z-index: 1;
+  /* Ensure heatmap is below progress fill but above background */
+  padding-bottom: 0;
+  /* Full height */
+}
+
+/* Heatmap Bars */
+.heatmapBar {
+  flex: 1;
+  background: #a855f7;
+  /* Purple-500 */
+  margin: 0 1px;
+  border-radius: 2px 2px 0 0;
+  transition: height 0.3s ease;
+  min-height: 4px;
+  /* Always visible */
+  box-shadow: 0 0 6px rgba(168, 85, 247, 0.6);
+  opacity: 0.8;
+}
+
+/* Progress Fill Line */
+.progressFill {
+  position: absolute;
+  top: 0;
+  left: 0;
+  height: 100%;
+  background: rgba(255, 255, 255, 0.15);
+  /* Subtle highlight */
+  border-right: 2px solid #60a5fa;
+  /* Blue indicator */
+  z-index: 10;
+  pointer-events: none;
+}
+
+/* Buttons Row */
+.controlRow {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 1rem;
+}
+
+.leftControls,
+.rightControls {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+/* Play Button with Glow */
+.playButton {
+  background: linear-gradient(135deg, #3b82f6, #2563eb);
+  color: white;
+  border: none;
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  font-size: 1.25rem;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  cursor: pointer;
+  transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+  box-shadow: 0 10px 20px -5px rgba(37, 99, 235, 0.5);
+  position: relative;
+  overflow: hidden;
+}
+
+.playButton:hover {
+  transform: scale(1.1) translateY(-2px);
+  box-shadow: 0 15px 25px -5px rgba(37, 99, 235, 0.6);
+}
+
+.playButton:active {
+  transform: scale(0.95);
+}
+
+/* Secondary Actions */
+.iconButton {
+  background: rgba(255, 255, 255, 0.05);
+  color: #94a3b8;
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  padding: 0.5rem 0.75rem;
+  border-radius: 8px;
+  font-size: 0.8rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.iconButton:hover {
+  background: rgba(255, 255, 255, 0.1);
+  color: #fff;
+  border-color: rgba(255, 255, 255, 0.2);
+}
+
+/* Inputs */
+.speedSelect,
+.timeInput {
+  background: rgba(15, 23, 42, 0.6);
+  color: #e2e8f0;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  padding: 0.5rem 0.75rem;
+  border-radius: 8px;
+  font-size: 0.85rem;
+  outline: none;
+  transition: border-color 0.2s;
+  font-family: 'Inter', sans-serif;
+}
+
+.speedSelect:hover,
+.timeInput:hover {
+  border-color: rgba(255, 255, 255, 0.2);
+}
+
+.speedSelect:focus,
+.timeInput:focus {
+  border-color: #3b82f6;
+  background: rgba(15, 23, 42, 0.8);
+}
+
+.timeInput {
+  width: 120px;
+  text-align: center;
+}
