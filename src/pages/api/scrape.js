@@ -3,12 +3,26 @@ import { parseDCList } from '@/lib/parser';
 // Helper: Extract valid Gallery ID and type (major vs minor) from URL
 const extractGalleryInfo = (url) => {
     try {
-        // Handle cases like "lists/?id=" by letting URL object parse it normally
         const urlObj = new URL(url);
-        const id = urlObj.searchParams.get('id');
-        const isMinor = urlObj.hostname.includes('mgallery') || urlObj.pathname.includes('mgallery');
+        let id = urlObj.searchParams.get('id');
+
+        // Mobile / clean path support: extract ID from path if not in params
+        // Example: https://m.dcinside.com/board/cartoon -> id=cartoon
+        if (!id) {
+            const match = urlObj.pathname.match(/\/board\/([a-zA-Z0-9_]+)/);
+            if (match) id = match[1];
+        }
 
         if (!id) return null;
+
+        // Detect Minor Gallery
+        // Note: Mobile URLs might not show 'mgallery'. 
+        // We will default to Major (`gall.dcinside.com/board`) first.
+        // If it's actually Minor, standard `fetch` should handle the 302 Redirect from Major->Minor URL.
+        const isMinor = urlObj.hostname.includes('mgallery') ||
+            urlObj.pathname.includes('mgallery') ||
+            (urlObj.searchParams.get('class') === 'mgallery'); // Some old formats
+
         return { id, isMinor };
     } catch (e) {
         return null;
@@ -29,6 +43,7 @@ export default async function handler(req, res) {
     // 1. URL Validation (Prevent SSRF)
     try {
         const parsedUrl = new URL(url);
+        // Allow both gall.dcinside.com and m.dcinside.com
         if (!parsedUrl.hostname.includes('dcinside.com')) {
             return res.status(400).json({ error: 'Invalid URL: Only dcinside.com URLs are allowed.' });
         }
@@ -38,7 +53,7 @@ export default async function handler(req, res) {
 
     const info = extractGalleryInfo(url);
     if (!info) {
-        return res.status(400).json({ error: 'Invalid DC Inside URL.' });
+        return res.status(400).json({ error: 'Invalid DC Inside URL. Could not find Gallery ID.' });
     }
 
     const { id, isMinor } = info;
