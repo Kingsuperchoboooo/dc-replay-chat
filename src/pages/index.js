@@ -1,7 +1,79 @@
 
 import { useState, useEffect, useRef } from 'react';
 import Head from 'next/head';
+import DatePicker from 'react-datepicker';
 import styles from '@/styles/Home.module.css';
+
+// Custom Scrollable Time Input Component
+const CustomTimeInput = ({ date, value, onChange }) => {
+  const valueStr = value || "00:00";
+  const [hh, mm] = valueStr.split(':');
+
+  const hours = Array.from({ length: 24 }, (_, i) => i.toString().padStart(2, '0'));
+  const minutes = Array.from({ length: 60 }, (_, i) => i.toString().padStart(2, '0'));
+
+  const hourRef = useRef(null);
+  const minuteRef = useRef(null);
+
+  // Auto-scroll to current selection
+  useEffect(() => {
+    if (hourRef.current) {
+      const selectedEl = hourRef.current.querySelector(`.${styles.timeItemSelected}`);
+      if (selectedEl) {
+        selectedEl.scrollIntoView({ block: 'center' });
+      }
+    }
+    if (minuteRef.current) {
+      const selectedEl = minuteRef.current.querySelector(`.${styles.timeItemSelected}`);
+      if (selectedEl) {
+        selectedEl.scrollIntoView({ block: 'center' });
+      }
+    }
+  }, []);
+
+  const handleHourClick = (h) => {
+    onChange(`${h}:${mm}`);
+  };
+
+  const handleMinuteClick = (m) => {
+    onChange(`${hh}:${m}`);
+  };
+
+  return (
+    <div className={styles.timePickerContainer}>
+      <div className={styles.timeColumn} ref={hourRef}>
+        <div className={styles.timeLabel}>Hour</div>
+        {hours.map((h) => (
+          <div
+            key={h}
+            className={`${styles.timeItem} ${h === hh ? styles.timeItemSelected : ''}`}
+            onClick={() => handleHourClick(h)}
+          >
+            {h}
+          </div>
+        ))}
+      </div>
+      <div style={{ width: '1px', background: 'var(--glass-border)' }}></div>
+      <div className={styles.timeColumn} ref={minuteRef}>
+        <div className={styles.timeLabel}>Min</div>
+        {minutes.map((m) => (
+          <div
+            key={m}
+            className={`${styles.timeItem} ${m === mm ? styles.timeItemSelected : ''}`}
+            onClick={() => handleMinuteClick(m)}
+          >
+            {m}
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+};
+
+import { registerLocale } from 'react-datepicker';
+import ko from 'date-fns/locale/ko';
+
+registerLocale('ko', ko);
 
 export default function Home() {
   const [posts, setPosts] = useState([]);
@@ -17,7 +89,9 @@ export default function Home() {
   // Scraper State
   const [mode, setMode] = useState('scrape');
   const [scrapeUrl, setScrapeUrl] = useState('');
-  const [scrapeTime, setScrapeTime] = useState('');
+  const [timeInputValue, setTimeInputValue] = useState(''); // HH:MM:SS input
+  // Initialize with current time (or null if preferred, but DatePicker needs date object)
+  const [scrapeTime, setScrapeTime] = useState(new Date());
 
   // Auto-fill from URL Query
   useEffect(() => {
@@ -29,16 +103,51 @@ export default function Home() {
       }
     }
   }, []);
+
+  // Load API Key
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      const storedKey = localStorage.getItem('GEMINI_API_KEY');
+      if (storedKey) setApiKey(storedKey);
+    }
+  }, []);
+
+  // Theme State
+  const [theme, setTheme] = useState('dark');
+
+  // Load Theme
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      const storedTheme = localStorage.getItem('THEME') || 'dark';
+      setTheme(storedTheme);
+    }
+  }, []);
+
+  const toggleTheme = () => {
+    const newTheme = theme === 'dark' ? 'light' : 'dark';
+    setTheme(newTheme);
+    localStorage.setItem('THEME', newTheme);
+  };
+
+
+
   const [scrapeDuration, setScrapeDuration] = useState(60);
   const [isScraping, setIsScraping] = useState(false);
 
   // UI State
   const [fontSize, setFontSize] = useState(16);
   const [showHeatmap, setShowHeatmap] = useState(true);
+  const [chatInput, setChatInput] = useState('');
+  const [showSettings, setShowSettings] = useState(false);
+  const [apiKey, setApiKey] = useState('');
 
   const messagesEndRef = useRef(null);
   const timerRef = useRef(null);
   const progressBarRef = useRef(null);
+  const datePickerRef = useRef(null);
+
+  const [isSyncingDate, setIsSyncingDate] = useState(false);
+  const [syncMessage, setSyncMessage] = useState('');
 
   // Auto-scroll to bottom
   useEffect(() => {
@@ -112,8 +221,35 @@ export default function Home() {
     }
 
     setIsScraping(true);
+    // Convert Date object to ISO string or expected format for API
+    // The API probably expects an ISO string or a timestamp.
+    // Let's ensure we pass a valid string. API expects 'targetTime'
+    const targetTimeStr = scrapeTime instanceof Date ? scrapeTime.toISOString() : scrapeTime;
+
+    // Extract Post ID if available (for Binary Search)
+    let targetPostId = null;
     try {
-      const res = await fetch(`/api/scrape?url=${encodeURIComponent(scrapeUrl)}&targetTime=${scrapeTime}&duration=${scrapeDuration}`);
+      const u = new URL(scrapeUrl);
+      // Standard parameter 'no'
+      targetPostId = u.searchParams.get('no');
+
+      // Path based ID (e.g. /board/id/12345)
+      if (!targetPostId) {
+        const match = u.pathname.match(/\/board\/[^/]+\/(\d+)/);
+        if (match) targetPostId = match[1];
+      }
+    } catch (e) {
+      console.warn("Failed to parse URL for ID", e);
+    }
+
+    try {
+      const queryParams = new URLSearchParams({
+        url: scrapeUrl,
+        targetTime: targetTimeStr,
+        duration: scrapeDuration.toString(),
+        ...(targetPostId && { targetPostId })
+      });
+      const res = await fetch(`/api/scrape?${queryParams.toString()}`);
       const data = await res.json();
 
       if (data.posts && data.posts.length > 0) {
@@ -292,12 +428,32 @@ export default function Home() {
     setReplayTime(new Date(newTs));
   };
 
+  const handleTimeInputChange = (e) => {
+    let val = e.target.value.replace(/\D/g, ''); // Digits only
+    if (val.length > 6) val = val.slice(0, 6);
+
+    if (val.length > 4) {
+      val = `${val.slice(0, 2)}:${val.slice(2, 4)}:${val.slice(4)}`;
+    } else if (val.length > 2) {
+      val = `${val.slice(0, 2)}:${val.slice(2)}`;
+    }
+    setTimeInputValue(val);
+  };
+
   const handleTimeInput = (e) => {
     if (e.key === 'Enter') {
-      const input = e.target.value; // HH:MM:SS
+      const input = timeInputValue; // Use controlled state
       if (!startTime) return;
 
-      const [h, m, s] = input.split(':').map(Number);
+      const parts = input.split(':').map(Number);
+      // Valid if we have at least H, M (S is optional?) Or strict HH:MM:SS.
+      // Logic above enforces auto-colon, so we likely have H:M:S or partial.
+      // Let's support partial: H, H:M, H:M:S
+      let h = 0, m = 0, s = 0;
+      if (parts.length >= 1) h = parts[0];
+      if (parts.length >= 2) m = parts[1];
+      if (parts.length >= 3) s = parts[2];
+
       if (isNaN(h) || isNaN(m) || isNaN(s)) return;
 
       const newDate = new Date(startTime);
@@ -306,8 +462,154 @@ export default function Home() {
       newDate.setSeconds(s);
 
       setReplayTime(newDate);
-      e.target.value = ''; // Clear input
+      setTimeInputValue(''); // Clear input
     }
+  };
+
+  /* Auto-Date Sync Logic */
+  const syncDateFromPost = async (url) => {
+    // Basic check if it looks like a post URL
+    if (!url.includes('view') && !url.includes('/board/') && !url.includes('no=')) return;
+
+    // Determine if it might be a post (has 'no=' or is a view path)
+    const isPost = url.includes('no=') || (url.includes('/board/') && !url.includes('/lists') && /\/board\/[^/]+\/\d+/.test(url));
+    if (!isPost) return;
+
+    setIsSyncingDate(true);
+    setSyncMessage('🕒 Checking post date...');
+
+    try {
+      const res = await fetch(`/api/peek_post?url=${encodeURIComponent(url)}`);
+      if (res.ok) {
+        const data = await res.json();
+        if (data.timestamp) {
+          const date = new Date(data.timestamp);
+          setScrapeTime(date);
+          setSyncMessage(`✅ Time Set! Adjust wheels below to fine-tune.`);
+          setTimeout(() => setSyncMessage(''), 4000);
+        }
+      } else {
+        setSyncMessage('');
+      }
+    } catch (e) {
+      console.error(e);
+      setSyncMessage('');
+    } finally {
+      setIsSyncingDate(false);
+    }
+  };
+
+  const handleUrlBlur = () => {
+    if (scrapeUrl) {
+      syncDateFromPost(scrapeUrl);
+    }
+  };
+
+  const handleSendMessage = async (e) => {
+    if ((e.key === 'Enter' || e.type === 'click') && chatInput.trim()) {
+      if (!replayTime) return;
+
+      const userMsgContent = chatInput.trim();
+      const currentTs = replayTime.getTime();
+
+      const newPost = {
+        title: userMsgContent,
+        author: '나',
+        timestamp: new Date().toISOString(),
+        virtualTimestamp: currentTs,
+        displayTime: formatTime(replayTime),
+        isUser: true
+      };
+
+      // 1. Show User Message immediately
+      setDisplayedPosts((prev) => [...prev, newPost]);
+
+      // Update main posts array to include user message (for seek/heatmap consistency)
+      setPosts((prev) => {
+        const newPosts = [...prev, newPost];
+        return newPosts.sort((a, b) => a.virtualTimestamp - b.virtualTimestamp);
+      });
+
+      setChatInput('');
+      setCurrentPostIndex((prev) => prev + 1);
+
+      // --- AI Reaction Logic ---
+
+      // Collect Context (Last 10 messages visible)
+      const context = displayedPosts.slice(-10).map(p => ({
+        author: p.author,
+        title: p.title
+      }));
+
+      // Call API
+      try {
+        const res = await fetch('/api/generate_reaction', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'x-gemini-api-key': apiKey // Send key if exists
+          },
+          body: JSON.stringify({
+            context,
+            userMessage: userMsgContent
+          })
+        });
+
+        if (!res.ok) {
+          // If 401, maybe prompt settings?
+          if (res.status === 401) {
+            console.warn("API Key missing or invalid");
+            // Optional: Alert user or show small toast
+          }
+          return;
+        }
+
+        const data = await res.json();
+
+        if (data.reactions && Array.isArray(data.reactions)) {
+          // Schedule reactions
+          data.reactions.forEach((reactionText) => {
+            // Random delay 1s ~ 3s
+            const delay = 1000 + Math.random() * 2000;
+            const reactionTs = currentTs + delay;
+
+            setTimeout(() => {
+              const reactionPost = {
+                title: reactionText,
+                author: 'ㅇㅇ', // Anonymous
+                timestamp: new Date().toISOString(), // Valid format needed?
+                virtualTimestamp: reactionTs,
+                displayTime: formatTime(new Date(reactionTs)),
+                isUser: false,
+                ip: 'AI' // Mark as AI for debugging?
+              };
+
+              // Add to Real-time View
+              setDisplayedPosts((prev) => {
+                // Only add if we are still playing/watching nearby code? 
+                // Simpler: Just append. 
+                return [...prev, reactionPost];
+              });
+
+              // Also add to main posts history so it persists if we rewind
+              setPosts((prev) => {
+                const newPosts = [...prev, reactionPost];
+                return newPosts.sort((a, b) => a.virtualTimestamp - b.virtualTimestamp);
+              });
+
+            }, delay);
+          });
+        }
+      } catch (err) {
+        console.error("AI Generation failed", err);
+      }
+    }
+  };
+
+  const saveSettings = () => {
+    localStorage.setItem('GEMINI_API_KEY', apiKey);
+    setShowSettings(false);
+    alert('API Key Saved!');
   };
 
   const progressPercentage = startTime && endTime && replayTime
@@ -315,7 +617,7 @@ export default function Home() {
     : 0;
 
   return (
-    <div className={styles.container}>
+    <div className={styles.container} data-theme={theme}>
       <Head>
         <title>DC Replay Chat</title>
         <meta name="description" content="Replay DC Inside reactions" />
@@ -353,35 +655,61 @@ export default function Home() {
                 <input
                   type="text"
                   className={styles.inputField}
-                  placeholder="Gallery URL (e.g. https://gall.dcinside.com/...)"
+                  placeholder="갤러리 주소 또는 게시글 주소 (자동 시간 설정)"
                   value={scrapeUrl}
                   onChange={(e) => setScrapeUrl(e.target.value)}
+                  onBlur={handleUrlBlur}
                 />
+                {syncMessage && <div style={{ fontSize: '0.8rem', color: '#fbbf24', marginTop: '-0.5rem', paddingLeft: '0.5rem' }}>{syncMessage}</div>}
 
                 <div className={styles.labelRow}>
-                  <span className={styles.labelText}>Target Date & Time</span>
-                  <span className={styles.labelText}>Replay Duration</span>
+                  <span className={styles.labelText} style={{ flex: 2 }}>시작 날짜 & 시간</span>
+                  <span className={styles.labelText} style={{ flex: 1 }}>재생 구간</span>
                 </div>
 
                 <div className={styles.row}>
-                  <input
-                    type="datetime-local"
-                    className={styles.inputField}
-                    value={scrapeTime}
-                    onChange={(e) => setScrapeTime(e.target.value)}
-                  />
-                  <select
-                    className={styles.inputField}
-                    value={scrapeDuration}
-                    onChange={(e) => setScrapeDuration(Number(e.target.value))}
-                  >
-                    <option value={30}>30 Mins</option>
-                    <option value={60}>1 Hour</option>
-                    <option value={120}>2 Hours</option>
-                    <option value={180}>3 Hours</option>
-                    <option value={360}>6 Hours (Slow)</option>
-                    <option value={720}>12 Hours (Risk)</option>
-                  </select>
+                  <div className={styles.datePickerWrapper}>
+                    <DatePicker
+                      locale="ko"
+                      ref={datePickerRef}
+                      selected={scrapeTime}
+                      onChange={(date) => setScrapeTime(date)}
+                      dateFormat="yyyy/MM/dd HH:mm"
+                      showTimeInput
+                      customTimeInput={<CustomTimeInput />}
+                      className={styles.inputField}
+                      calendarClassName={styles.customCalendar}
+                      popperClassName={styles.customPopper}
+                      placeholderText="Select Date & Time"
+                      shouldCloseOnSelect={false} // Keep open to let user click OK
+                    >
+                      <div className={styles.datePickerFooter}>
+                        <button
+                          className={styles.okButton}
+                          onClick={(e) => {
+                            e.preventDefault();
+                            datePickerRef.current.setOpen(false);
+                          }}
+                        >
+                          OK
+                        </button>
+                      </div>
+                    </DatePicker>
+                  </div>
+                  <div className={styles.durationWrapper}>
+                    <select
+                      className={styles.inputField}
+                      value={scrapeDuration}
+                      onChange={(e) => setScrapeDuration(Number(e.target.value))}
+                    >
+                      <option value={30}>30 Mins</option>
+                      <option value={60}>1 Hour</option>
+                      <option value={120}>2 Hours</option>
+                      <option value={180}>3 Hours</option>
+                      <option value={360}>6 Hours (Slow)</option>
+                      <option value={720}>12 Hours (Risk)</option>
+                    </select>
+                  </div>
                 </div>
 
                 {scrapeDuration >= 360 && (
@@ -406,12 +734,29 @@ export default function Home() {
           <div className={styles.chatContainer}>
             <div className={styles.header}>
               <span className={styles.headerTitle}>Live Reactions</span>
-              <div className={styles.timeDisplay}>{formatTime(replayTime)}</div>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
+                <div className={styles.timeDisplay}>{formatTime(replayTime)}</div>
+                <button
+                  className={styles.iconButton}
+                  onClick={toggleTheme}
+                  title={theme === 'dark' ? 'Switch to Light Mode' : 'Switch to Dark Mode'}
+                >
+                  {theme === 'dark' ? '🌙' : '☀️'}
+                </button>
+                <button
+                  className={styles.iconButton}
+                  onClick={() => setShowSettings(true)}
+                  title="Settings (API Key)"
+                >
+                  ⚙️
+                </button>
+              </div>
             </div>
 
             <div className={styles.messagesArea}>
-              {displayedPosts.map((msg, i) => (
-                <div key={i} className={styles.messageBubble}>
+              {/* VIRTUALIZATION / SAFETY LIMIT: Only render last 300 messages to prevent DOM Overflow/Lag */}
+              {displayedPosts.slice(-300).map((msg, i) => (
+                <div key={i} className={`${styles.messageBubble} ${msg.isUser ? styles.myMessage : ''}`}>
                   <div className={styles.metaRow}>
                     <span className={styles.author}>{msg.author}</span>
                     <span className={styles.ip}>
@@ -423,6 +768,18 @@ export default function Home() {
                 </div>
               ))}
               <div ref={messagesEndRef} />
+            </div>
+
+            <div className={styles.chatInputArea}>
+              <input
+                type="text"
+                className={styles.chatInput}
+                placeholder="채팅 치기..."
+                value={chatInput}
+                onChange={(e) => setChatInput(e.target.value)}
+                onKeyDown={handleSendMessage}
+              />
+              <button className={styles.sendButton} onClick={handleSendMessage}>전송</button>
             </div>
 
             <div className={styles.controlsArea}>
@@ -481,11 +838,17 @@ export default function Home() {
                 </div>
 
                 <div className={styles.centerControls}>
-                  <button className={styles.iconButton} onClick={() => handleJump(-10)}>-10</button>
+                  <button className={styles.iconButton} onClick={() => handleJump(-10)}>-10s</button>
+                  <button className={styles.tinyButton} onClick={() => handleJump(-1)}>-1s</button>
+                  <button className={styles.tinyButton} onClick={() => handleJump(-0.5)}>-0.5s</button>
+
                   <button className={styles.playButton} onClick={togglePlay}>
                     {isPlaying ? '⏸' : '▶'}
                   </button>
-                  <button className={styles.iconButton} onClick={() => handleJump(10)}>+10</button>
+
+                  <button className={styles.tinyButton} onClick={() => handleJump(0.5)}>+0.5s</button>
+                  <button className={styles.tinyButton} onClick={() => handleJump(1)}>+1s</button>
+                  <button className={styles.iconButton} onClick={() => handleJump(10)}>+10s</button>
                 </div>
 
                 <div className={styles.rightControls}>
@@ -493,6 +856,8 @@ export default function Home() {
                     type="text"
                     className={styles.timeInput}
                     placeholder="HH:MM:SS"
+                    value={timeInputValue}
+                    onChange={handleTimeInputChange}
                     onKeyDown={handleTimeInput}
                   />
 
@@ -522,6 +887,45 @@ export default function Home() {
           </div>
         )}
       </main>
+
+      {/* Settings Modal */}
+      {showSettings && (
+        <div className={styles.modalOverlay}>
+          <div className={styles.modalContent}>
+            <h3>Settings</h3>
+            <label style={{ display: 'block', marginBottom: '0.5rem', fontSize: '0.9rem', color: '#ccc' }}>
+              Gemini API Key (Optional)
+            </label>
+            <input
+              type="password"
+              className={styles.inputField}
+              style={{ width: '100%', marginBottom: '1rem' }}
+              placeholder="Enter your API Key"
+              value={apiKey}
+              onChange={(e) => setApiKey(e.target.value)}
+            />
+            <p style={{ fontSize: '0.8rem', color: '#64748b', marginBottom: '1.5rem' }}>
+              Key is stored in your browser (LocalStorage).
+            </p>
+            <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '0.5rem' }}>
+              <button
+                className={styles.tabButton}
+                onClick={() => setShowSettings(false)}
+                style={{ background: 'transparent', border: '1px solid #334155' }}
+              >
+                Cancel
+              </button>
+              <button
+                className={styles.scrapeButton}
+                onClick={saveSettings}
+                style={{ marginTop: 0, padding: '0.5rem 1rem' }}
+              >
+                Save
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

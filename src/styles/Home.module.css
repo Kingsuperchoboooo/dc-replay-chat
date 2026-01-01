@@ -1,12 +1,81 @@
 /* Global Clean Reset & Typography */
+:root {
+  /* Dark Mode (Default) */
+  --bg-gradient-start: #1e293b;
+  --bg-gradient-end: #0f172a;
+  --text-primary: #f1f5f9;
+  --text-secondary: #94a3b8;
+  --text-muted: #64748b;
+
+  --glass-bg: rgba(30, 41, 59, 0.7);
+  --glass-border: rgba(255, 255, 255, 0.08);
+  --glass-header: rgba(15, 23, 42, 0.6);
+
+  --input-bg: rgba(15, 23, 42, 0.6);
+  --input-border: rgba(255, 255, 255, 0.1);
+  --input-focus-bg: rgba(15, 23, 42, 0.8);
+
+  --accent-color: #3b82f6;
+  --accent-hover: #2563eb;
+  --accent-text: #60a5fa;
+
+  --message-bg: rgba(255, 255, 255, 0.03);
+  --message-hover: rgba(255, 255, 255, 0.06);
+  --message-border: rgba(255, 255, 255, 0.04);
+
+  --my-message-bg: rgba(59, 130, 246, 0.15);
+  --my-message-border: rgba(59, 130, 246, 0.3);
+
+  --scrollbar-thumb: rgba(255, 255, 255, 0.1);
+  --control-bg: rgba(15, 23, 42, 0.4);
+}
+
+:global([data-theme='light']) {
+  /* Light Mode Overrides */
+  --bg-gradient-start: #f8fafc;
+  --bg-gradient-end: #e2e8f0;
+  --text-primary: #1e293b;
+  --text-secondary: #64748b;
+  --text-muted: #94a3b8;
+
+  --glass-bg: rgba(255, 255, 255, 0.85);
+  /* Whiter glass */
+  --glass-border: rgba(0, 0, 0, 0.06);
+  --glass-header: rgba(255, 255, 255, 0.9);
+
+  --input-bg: #ffffff;
+  --input-border: #cbd5e1;
+  --input-focus-bg: #ffffff;
+
+  --accent-color: #3b82f6;
+  /* Keep Blue */
+  --accent-hover: #2563eb;
+  --accent-text: #2563eb;
+  /* Darker blue for text */
+
+  --message-bg: rgba(0, 0, 0, 0.03);
+  /* Slight grey */
+  --message-hover: rgba(0, 0, 0, 0.05);
+  --message-border: rgba(0, 0, 0, 0.05);
+
+  --my-message-bg: #dbeafe;
+  /* Blue-100 */
+  --my-message-border: #bfdbfe;
+  /* Blue-200 */
+
+  --scrollbar-thumb: rgba(0, 0, 0, 0.2);
+  --control-bg: rgba(255, 255, 255, 0.5);
+}
+
 .container {
   min-height: 100vh;
-  background: radial-gradient(circle at top center, #1e293b, #0f172a);
-  color: #f1f5f9;
+  background: radial-gradient(circle at top center, var(--bg-gradient-start), var(--bg-gradient-end));
+  color: var(--text-primary);
   font-family: 'Inter', system-ui, -apple-system, sans-serif;
   display: flex;
   flex-direction: column;
-  /* align-items: center;  <-- Remove this to let margin: auto handle centering */
+  align-items: center;
+  /* Center horizontally */
   /* justify-content: center; <-- Remove to let margin: auto handle centering */
   padding: 1rem;
   /* Reduce padding to give more space */
@@ -17,6 +86,8 @@
 /* Upload Zone with Dashed Glass Effect */
 /* Landing & Tabs */
 .landingContainer {
+  margin-top: 10vh;
+  /* Push down mostly for "Central Top" look */
   width: 100%;
   max-width: 500px;
   display: flex;
@@ -26,10 +97,10 @@
 
 .tabContainer {
   display: flex;
-  background: rgba(15, 23, 42, 0.6);
+  background: var(--glass-header);
   padding: 4px;
   border-radius: 12px;
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  border: 1px solid var(--glass-border);
 }
 
 .tabButton {
@@ -37,7 +108,7 @@
   padding: 0.75rem;
   border: none;
   background: transparent;
-  color: #94a3b8;
+  color: var(--text-secondary);
   font-weight: 600;
   cursor: pointer;
   border-radius: 8px;
@@ -45,21 +116,21 @@
 }
 
 .tabButton:hover {
-  color: #fff;
+  color: var(--text-primary);
 }
 
 .activeTab {
   background: rgba(59, 130, 246, 0.2);
-  color: #60a5fa;
+  color: var(--accent-text);
 }
 
 /* Scrape Form */
 .scrapeForm {
-  background: rgba(30, 41, 59, 0.7);
+  background: var(--glass-bg);
   backdrop-filter: blur(20px);
   padding: 2rem;
   border-radius: 1.5rem;
-  border: 1px solid rgba(255, 255, 255, 0.08);
+  border: 1px solid var(--glass-border);
   display: flex;
   flex-direction: column;
   gap: 1rem;
@@ -67,32 +138,32 @@
 
 .labelRow {
   display: flex;
-  justify-content: space-between;
+  gap: 1rem;
   margin-bottom: -0.5rem;
   padding: 0 0.5rem;
 }
 
 .labelText {
   font-size: 0.8rem;
-  color: #94a3b8;
+  color: var(--text-secondary);
   font-weight: 600;
   flex: 1;
 }
 
 .inputField {
   width: 100%;
-  background: rgba(15, 23, 42, 0.6);
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  background: var(--input-bg);
+  border: 1px solid var(--input-border);
   padding: 0.85rem 1rem;
   border-radius: 10px;
-  color: #f1f5f9;
+  color: var(--text-primary);
   outline: none;
   font-family: inherit;
 }
 
 .inputField:focus {
-  border-color: #3b82f6;
-  background: rgba(15, 23, 42, 0.8);
+  border-color: var(--accent-color);
+  background: var(--input-focus-bg);
 }
 
 .row {
@@ -101,7 +172,7 @@
 }
 
 .scrapeButton {
-  background: linear-gradient(135deg, #3b82f6, #2563eb);
+  background: linear-gradient(135deg, var(--accent-color), var(--accent-hover));
   color: white;
   border: none;
   padding: 1rem;
@@ -124,7 +195,7 @@
 
 .loadingText {
   text-align: center;
-  color: #60a5fa;
+  color: var(--accent-text);
   font-size: 0.9rem;
   animation: pulse 1.5s infinite;
 }
@@ -145,7 +216,7 @@
 .chatContainer {
   /* Starting dimensions */
   width: 800px;
-  height: 700px;
+  height: 900px;
 
   /* Constraints */
   min-width: 350px;
@@ -153,17 +224,17 @@
   max-width: 95vw;
   max-height: 95vh;
 
-  background: rgba(30, 41, 59, 0.7);
+  background: var(--glass-bg);
   backdrop-filter: blur(20px);
   -webkit-backdrop-filter: blur(20px);
-  border: 1px solid rgba(255, 255, 255, 0.08);
+  border: 1px solid var(--glass-border);
   border-radius: 24px;
   overflow: hidden;
   display: flex;
   flex-direction: column;
   box-shadow:
-    0 0 0 1px rgba(0, 0, 0, 0.2),
-    0 20px 50px -10px rgba(0, 0, 0, 0.6);
+    0 0 0 1px rgba(0, 0, 0, 0.05),
+    0 20px 50px -10px rgba(0, 0, 0, 0.1);
   animation: fadeInContainer 0.6s ease-out;
 
   /* Resizable */
@@ -188,8 +259,8 @@
 /* Header */
 .header {
   padding: 1.25rem 1.5rem;
-  background: rgba(15, 23, 42, 0.6);
-  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+  background: var(--glass-header);
+  border-bottom: 1px solid var(--glass-border);
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -200,20 +271,20 @@
   font-weight: 800;
   font-size: 1.1rem;
   letter-spacing: -0.02em;
-  background: linear-gradient(135deg, #fff 0%, #94a3b8 100%);
+  background: linear-gradient(135deg, var(--text-primary) 0%, var(--text-secondary) 100%);
   -webkit-background-clip: text;
+  background-clip: text;
   color: transparent;
 }
 
 .timeDisplay {
   font-family: 'JetBrains Mono', 'Fira Code', monospace;
   font-size: 0.85rem;
-  color: #60a5fa;
-  background: rgba(37, 99, 235, 0.15);
+  color: var(--accent-text);
+  background: rgba(59, 130, 246, 0.1);
   padding: 0.25rem 0.75rem;
   border-radius: 6px;
   border: 1px solid rgba(59, 130, 246, 0.2);
-  box-shadow: 0 0 15px rgba(59, 130, 246, 0.1);
 }
 
 /* Messages Area */
@@ -225,7 +296,8 @@
   display: flex;
   flex-direction: column;
   gap: 1rem;
-  background: linear-gradient(to bottom, rgba(15, 23, 42, 0) 0%, rgba(15, 23, 42, 0.3) 100%);
+  /* Warning: Gradient overlay may look weird in Light Mode. Using simple transparent to subtle shadow? */
+  background: transparent;
 }
 
 .messagesArea::-webkit-scrollbar {
@@ -233,7 +305,7 @@
 }
 
 .messagesArea::-webkit-scrollbar-thumb {
-  background: rgba(255, 255, 255, 0.1);
+  background: var(--scrollbar-thumb);
   border-radius: 10px;
 }
 
@@ -243,19 +315,19 @@
 
 /* Message Bubbles */
 .messageBubble {
-  background: rgba(255, 255, 255, 0.03);
+  background: var(--message-bg);
   padding: 0.85rem 1rem;
   border-radius: 16px;
   border-top-left-radius: 4px;
-  border: 1px solid rgba(255, 255, 255, 0.04);
+  border: 1px solid var(--message-border);
   animation: slideInMessage 0.4s cubic-bezier(0.16, 1, 0.3, 1);
   transform-origin: left bottom;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
   transition: transform 0.2s;
 }
 
 .messageBubble:hover {
-  background: rgba(255, 255, 255, 0.06);
+  background: var(--message-hover);
 }
 
 @keyframes slideInMessage {
@@ -280,23 +352,29 @@
 .author {
   font-weight: 700;
   color: #fbbf24;
-  /* Amber-400 */
+  /* Amber-400 (Keeping Amber for contrast, maybe darker in Light mode?) */
   font-size: 0.9rem;
 }
 
+/* Light Mode specific for author? */
+[data-theme='light'] .author {
+  color: #d97706;
+  /* Amber-600 */
+}
+
 .ip {
-  color: #94a3b8;
+  color: var(--text-secondary);
   font-size: 0.75rem;
 }
 
 .time {
   margin-left: auto;
-  color: #64748b;
+  color: var(--text-muted);
   font-size: 0.75rem;
 }
 
 .content {
-  color: #e2e8f0;
+  color: var(--text-primary);
   font-size: 0.95rem;
   line-height: 1.5;
 }
@@ -305,8 +383,8 @@
 .controlsArea {
   margin-top: auto;
   padding: 1rem 1.5rem;
-  background: rgba(15, 23, 42, 0.4);
-  border-top: 1px solid rgba(255, 255, 255, 0.05);
+  background: var(--control-bg);
+  border-top: 1px solid var(--glass-border);
   display: flex;
   flex-direction: column;
   gap: 1rem;
@@ -320,7 +398,7 @@
   width: 100%;
   height: 24px;
   /* Much thicker for visibility */
-  background: rgba(255, 255, 255, 0.1);
+  background: rgba(128, 128, 128, 0.2);
   border-radius: 6px;
   cursor: pointer;
   position: relative;
@@ -366,7 +444,7 @@
   height: 100%;
   background: rgba(255, 255, 255, 0.15);
   /* Subtle highlight */
-  border-right: 2px solid #60a5fa;
+  border-right: 2px solid var(--accent-color);
   /* Blue indicator */
   z-index: 10;
   pointer-events: none;
@@ -390,7 +468,7 @@
 
 /* Play Button with Glow */
 .playButton {
-  background: linear-gradient(135deg, #3b82f6, #2563eb);
+  background: linear-gradient(135deg, var(--accent-color), var(--accent-hover));
   color: white;
   border: none;
   width: 48px;
@@ -419,8 +497,9 @@
 /* Secondary Actions */
 .iconButton {
   background: rgba(255, 255, 255, 0.05);
-  color: #94a3b8;
-  border: 1px solid rgba(255, 255, 255, 0.05);
+  /* Keep slight transparent white even in light mode? Or adaptive? */
+  color: var(--text-secondary);
+  border: 1px solid var(--glass-border);
   padding: 0.5rem 0.75rem;
   border-radius: 8px;
   font-size: 0.8rem;
@@ -429,18 +508,26 @@
   transition: all 0.2s;
 }
 
+:global([data-theme='light']) .iconButton {
+  background: rgba(0, 0, 0, 0.05);
+}
+
 .iconButton:hover {
   background: rgba(255, 255, 255, 0.1);
-  color: #fff;
-  border-color: rgba(255, 255, 255, 0.2);
+  color: var(--text-primary);
+  border-color: var(--text-secondary);
+}
+
+:global([data-theme='light']) .iconButton:hover {
+  background: rgba(0, 0, 0, 0.1);
 }
 
 /* Inputs */
 .speedSelect,
 .timeInput {
-  background: rgba(15, 23, 42, 0.6);
-  color: #e2e8f0;
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  background: var(--input-bg);
+  color: var(--text-primary);
+  border: 1px solid var(--input-border);
   padding: 0.5rem 0.75rem;
   border-radius: 8px;
   font-size: 0.85rem;
@@ -451,16 +538,361 @@
 
 .speedSelect:hover,
 .timeInput:hover {
-  border-color: rgba(255, 255, 255, 0.2);
+  border-color: var(--text-secondary);
 }
 
 .speedSelect:focus,
 .timeInput:focus {
-  border-color: #3b82f6;
-  background: rgba(15, 23, 42, 0.8);
+  border-color: var(--accent-color);
+  background: var(--input-focus-bg);
 }
 
 .timeInput {
   width: 120px;
   text-align: center;
+}
+
+/* User Chat Styles */
+.myMessage {
+  align-self: flex-end;
+  background: var(--my-message-bg);
+  border-color: var(--my-message-border);
+  border-top-left-radius: 16px;
+  border-top-right-radius: 4px;
+}
+
+.myMessage .author {
+  color: var(--accent-text);
+  /* Blue-400 */
+  text-align: right;
+}
+
+.myMessage .metaRow {
+  flex-direction: row-reverse;
+}
+
+.chatInputArea {
+  display: flex;
+  gap: 0.5rem;
+  padding: 0 1.5rem 1rem 1.5rem;
+  background: var(--control-bg);
+  /* Match controls area bg if needed, or transparent */
+  z-index: 10;
+}
+
+.chatInput {
+  flex: 1;
+  background: var(--input-bg);
+  border: 1px solid var(--input-border);
+  padding: 0.75rem 1rem;
+  border-radius: 20px;
+  color: var(--text-primary);
+  outline: none;
+  font-family: inherit;
+  transition: all 0.2s;
+}
+
+.chatInput:focus {
+  border-color: var(--accent-color);
+  background: var(--input-focus-bg);
+  box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.2);
+}
+
+.sendButton {
+  background: var(--accent-color);
+  color: white;
+  border: none;
+  padding: 0 1.25rem;
+  border-radius: 20px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.sendButton:hover {
+  background: var(--accent-hover);
+  transform: translateY(-1px);
+}
+
+.sendButton:active {
+  transform: translateY(0);
+}
+
+/* Time Picker (Scrollable Wheel Style) */
+.timePickerContainer {
+  display: flex;
+  height: 200px;
+  background: var(--input-bg);
+  border-radius: 12px;
+  border: 1px solid var(--glass-border);
+  overflow: hidden;
+  margin-top: 0.5rem;
+  position: relative;
+}
+
+.timeColumn {
+  flex: 1;
+  overflow-y: auto;
+  scroll-behavior: smooth;
+  padding: 0.5rem 0;
+  /* Hide Scrollbar */
+  scrollbar-width: none;
+  /* Firefox */
+  -ms-overflow-style: none;
+  /* IE/Edge */
+  position: relative;
+}
+
+.timeColumn::-webkit-scrollbar {
+  display: none;
+  /* Chrome/Safari */
+}
+
+.timeItem {
+  padding: 0.5rem;
+  text-align: center;
+  cursor: pointer;
+  color: var(--text-secondary);
+  font-size: 0.9rem;
+  transition: all 0.2s;
+  border-radius: 6px;
+  margin: 0 0.25rem;
+}
+
+.timeItem:hover {
+  background: var(--message-hover);
+  /* Subtle hover */
+  color: var(--text-primary);
+}
+
+.timeItemSelected {
+  background: var(--accent-color);
+  color: white;
+  font-weight: bold;
+  font-size: 1rem;
+}
+
+.timeLabel {
+  text-align: center;
+  font-size: 0.75rem;
+  color: var(--text-muted);
+  padding: 0.25rem;
+  border-bottom: 1px solid var(--glass-border);
+  background: var(--glass-header);
+  position: sticky;
+  top: 0;
+  z-index: 1;
+}
+
+/* DatePicker Customization */
+.datePickerWrapper {
+  flex: 2;
+  /* Allocate more width (e.g., 66%) */
+  min-width: 0;
+  position: relative;
+}
+
+.durationWrapper {
+  flex: 1;
+  /* Allocate remaining width (e.g., 33%) */
+  min-width: 0;
+}
+
+.datePickerWrapper :global(.react-datepicker-wrapper) {
+  width: 100% !important;
+  display: block !important;
+}
+
+.datePickerWrapper :global(.react-datepicker__input-container) {
+  width: 100% !important;
+  display: block !important;
+}
+
+/* Force input styles within DatePicker */
+.datePickerWrapper :global(.react-datepicker__input-container input) {
+  width: 100% !important;
+  display: block !important;
+  background: var(--input-bg) !important;
+  color: var(--text-primary) !important;
+  border: 1px solid var(--input-border) !important;
+  padding: 0.85rem 1rem !important;
+  border-radius: 10px !important;
+  font-family: inherit !important;
+  box-sizing: border-box !important;
+}
+
+/* Override React Datepicker Default Styles for Dark Mode */
+.customCalendar {
+  background-color: #1e293b !important;
+  border: 1px solid rgba(255, 255, 255, 0.1) !important;
+  color: #f1f5f9 !important;
+  font-family: inherit !important;
+  border-radius: 12px !important;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5) !important;
+  overflow: hidden;
+}
+
+/* Light Mode Overrides for Calendar */
+:global([data-theme='light']) .customCalendar {
+  background-color: #ffffff !important;
+  border: 1px solid #cbd5e1 !important;
+  color: #1e293b !important;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1) !important;
+}
+
+.customCalendar :global(.react-datepicker__header) {
+  background-color: #0f172a !important;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1) !important;
+}
+
+:global([data-theme='light']) .customCalendar :global(.react-datepicker__header) {
+  background-color: #f1f5f9 !important;
+  border-bottom: 1px solid #cbd5e1 !important;
+}
+
+.customCalendar :global(.react-datepicker__current-month),
+.customCalendar :global(.react-datepicker__day-name) {
+  color: #f1f5f9 !important;
+}
+
+:global([data-theme='light']) .customCalendar :global(.react-datepicker__current-month),
+:global([data-theme='light']) .customCalendar :global(.react-datepicker__day-name) {
+  color: #1e293b !important;
+}
+
+.customCalendar :global(.react-datepicker__day) {
+  color: #cbd5e1 !important;
+}
+
+:global([data-theme='light']) .customCalendar :global(.react-datepicker__day) {
+  color: #334155 !important;
+}
+
+.customCalendar :global(.react-datepicker__day:hover) {
+  background-color: var(--accent-color) !important;
+  color: white !important;
+  border-radius: 50%;
+}
+
+.customCalendar :global(.react-datepicker__day--selected) {
+  background-color: var(--accent-hover) !important;
+  color: white !important;
+  border-radius: 50%;
+}
+
+.customCalendar :global(.react-datepicker__time-container) {
+  border-left: 1px solid rgba(255, 255, 255, 0.1) !important;
+  background-color: #1e293b !important;
+}
+
+:global([data-theme='light']) .customCalendar :global(.react-datepicker__time-container) {
+  border-left: 1px solid #cbd5e1 !important;
+  background-color: #ffffff !important;
+}
+
+
+.customCalendar :global(.react-datepicker__time-container .react-datepicker__time) {
+  background-color: #1e293b !important;
+}
+
+:global([data-theme='light']) .customCalendar :global(.react-datepicker__time-container .react-datepicker__time) {
+  background-color: #ffffff !important;
+}
+
+.customCalendar :global(.react-datepicker__time-container .react-datepicker__time .react-datepicker__time-box ul.react-datepicker__time-list li.react-datepicker__time-list-item) {
+  color: #f1f5f9 !important;
+}
+
+:global([data-theme='light']) .customCalendar :global(.react-datepicker__time-container .react-datepicker__time .react-datepicker__time-box ul.react-datepicker__time-list li.react-datepicker__time-list-item) {
+  color: #1e293b !important;
+}
+
+.customCalendar :global(.react-datepicker__time-container .react-datepicker__time .react-datepicker__time-box ul.react-datepicker__time-list li.react-datepicker__time-list-item:hover) {
+  background-color: #334155 !important;
+}
+
+:global([data-theme='light']) .customCalendar :global(.react-datepicker__time-container .react-datepicker__time .react-datepicker__time-box ul.react-datepicker__time-list li.react-datepicker__time-list-item:hover) {
+  background-color: #f1f5f9 !important;
+}
+
+.customCalendar :global(.react-datepicker__time-container .react-datepicker__time .react-datepicker__time-box ul.react-datepicker__time-list li.react-datepicker__time-list-item--selected) {
+  background-color: var(--accent-hover) !important;
+}
+
+.datePickerFooter {
+  padding: 0.5rem;
+  border-top: 1px solid var(--glass-border);
+  display: flex;
+  justify-content: flex-end;
+}
+
+.okButton {
+  background: var(--accent-color);
+  color: white;
+  border: none;
+  padding: 0.3rem 1rem;
+  border-radius: 6px;
+  font-size: 0.8rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.okButton:hover {
+  background: var(--accent-hover);
+}
+
+/* Modal for Settings */
+.modalOverlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.6);
+  backdrop-filter: blur(5px);
+  z-index: 100;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.modalContent {
+  background: var(--glass-bg);
+  border: 1px solid var(--glass-border);
+  padding: 2rem;
+  border-radius: 16px;
+  width: 400px;
+  max-width: 90vw;
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+}
+
+/* Tiny Button for Fine Seek */
+.tinyButton {
+  background: rgba(255, 255, 255, 0.05);
+  color: var(--text-secondary);
+  border: 1px solid var(--glass-border);
+  padding: 0.25rem 0.5rem;
+  border-radius: 6px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+  min-width: 36px;
+}
+
+:global([data-theme='light']) .tinyButton {
+  background: rgba(0, 0, 0, 0.05);
+  color: var(--text-secondary);
+}
+
+.tinyButton:hover {
+  background: rgba(255, 255, 255, 0.1);
+  color: var(--text-primary);
+  border-color: var(--text-secondary);
+}
+
+:global([data-theme='light']) .tinyButton:hover {
+  background: rgba(0, 0, 0, 0.1);
+  color: var(--text-primary);
 }

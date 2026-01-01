@@ -1,6 +1,6 @@
 {
   "name": "dc-replay-chat",
-  "version": "0.1.0",
+  "version": "1.1.0",
   "private": true,
   "scripts": {
     "dev": "next dev",
@@ -9,9 +9,12 @@
     "lint": "eslint"
   },
   "dependencies": {
+    "@google/generative-ai": "^0.24.1",
     "cheerio": "^1.1.2",
+    "date-fns": "^4.1.0",
     "next": "16.1.1",
     "react": "19.2.3",
+    "react-datepicker": "^9.1.0",
     "react-dom": "19.2.3"
   },
   "devDependencies": {

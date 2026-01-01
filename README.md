@@ -1,45 +1,32 @@
-# DC Replay Chat (Live Reaction Player)
+# DC Replay Chat (v1.1)
 
-**DC Replay Chat** allows you to re-experience the "Live Reactions" of DC Inside galleries during past events.
+A powerful tool to replay DC Inside chat history like a live stream.
+This project uses **Next.js** for the frontend/backend and standard scraping techniques to visualize historical data.
 
-![Preview](https://via.placeholder.com/800x400?text=DC+Replay+Chat+Preview)
+## 🚀 New Features in v1.1
 
-## Features
-- **Auto Scrape**: Automatically fetches past posts based on URL and Time.
-- **Real-time Replay**: Simulates the chat flow of the past.
-- **Heatmap**: Visualizes high-activity moments.
-- **Portable**: Can be run without installation on Windows.
-- **Secure**: Includes SSRF protection to only allow DC Inside URLs.
+*   **Smart Time Search**: Automatically binary searches for the exact post ID corresponding to a date.
+*   **Gallery Auto-Rotation**: Searching for "2022" on a 2024 gallery (e.g., `baseball_new13`) automatically redirects to the correct historical gallery (`baseball_new12`, `new11`...).
+*   **Wayback Machine Assist**: Uses the Internet Archive to find post IDs for very old dates where live search fails.
+*   **Portable Mode**: Now supports a standalone "No-Install" build.
+*   **Safety First**:
+    *   **DOM Overflow Protection**: Renders only the last 300 messages to prevent lag.
+    *   **Rate Limiting**: Protects against IP bans.
 
-## How to Use
+## 📦 How to Use (Portable Version)
 
-### Option 1: Web Version (Vercel)
-Best for quick viewing of **recent events (1-2 hours)**.
-1. Deploy to Vercel.
-2. Share the URL.
-3. *Note: Vercel Free Tier has a 10s timeout, so scraping very old data may fail.*
+1.  Download the **DC_Replay_Portable.7z** file.
+2.  Extract it.
+3.  Run **`start.bat`**.
+4.  Open `http://localhost:3000`.
 
-### Option 2: Portable PC Version (No Install)
-Best for **heavy usage** (deep historical scraping).
-1. Unzip the provided `DC_Replay_Portable` folder.
-2. Run **`start.bat`**.
-3. The app launches immediately in your browser.
+## 🛠️ Development
 
----
-
-## Bookmarklet
-Add this to your bookmarks to launch the Web Version instantly from any gallery:
-
-```javascript
-javascript:(function(){
-  const targetUrl = 'https://YOUR-VERCEL-APP-URL.vercel.app'; 
-  const currentUrl = encodeURIComponent(window.location.href);
-  window.open(targetUrl + '?url=' + currentUrl + '&auto=true', '_blank');
-})();
+```bash
+npm install
+npm run dev
 ```
 
-## Developer Guide
-To create the Portable Version, run **`create_portable_dist.bat`** in the project root.
+## ⚠️ Disclaimer
 
----
-*Created for The Singularity.*
+This tool is for personal educational use only. Respect the `robots.txt` and terms of service of target websites.
